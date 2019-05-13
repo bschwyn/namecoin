@@ -1,0 +1,49 @@
+pragma solidity ^0.4.0;
+#minimum version of solidity
+#how to treat source code
+
+contract SimpleStorage {
+    uint storedData; #unsigned 256 bit integer
+
+    function set(uint x) public {
+        storedData = x;
+    }
+
+    function get() public view returns (uint) {
+        return storedData;
+    }
+
+    #set and get modify / retrieve variable that is sort of like in a database
+    #names must be ASCII
+}
+
+pragma solidity ^0.4.21;
+
+contract Coin {
+    //the keyword public makees those variables
+    // readable form outside
+    address public minter;
+    mapping (address =>uint) public balances;
+
+    //events allow light clients to react on changes efficiently
+    event Sent(address from, address to, uint amount);
+
+    // This is the constructor whose code is
+    /run only when the contract is created
+    function Coin() public {
+        minter = msg.sender; //says who the minter address is
+    }
+
+    function mint(address receiver, uint amount) public {
+        if (msg.sender != minter) return;
+        balances[receiver] += amount;
+     }
+
+    function send(address receiver, uint amount) public {
+        if (balances[msg.sender] < amount) return;
+            balances[msg.sender] -= amount;
+            balances[receiver] += amount;
+            emit Sent(msg.sender, receiver, amount);
+    }
+}
+
